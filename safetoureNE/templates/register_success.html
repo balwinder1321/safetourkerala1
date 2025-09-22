@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Registered</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body>
+  <div class="container card">
+    <h2>Registration Successful</h2>
+    <p>Your Tourist ID: <strong>{{ tourist_id }}</strong></p>
+    <p>An email has been sent to <strong>{{ email }}</strong> with your ID and next steps.</p>
+    <a class="btn" href="login.html">Go to Login</a>
+  </div>
+</body>
+</html>

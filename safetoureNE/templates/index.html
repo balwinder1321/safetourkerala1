@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SafeTour Kerala</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    body,html{height:100%}
+    .splash {
+      height:100vh; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(120deg,#0ea5e9,#7dd3fc);
+      color:white; font-family: system-ui, sans-serif;
+      flex-direction:column;
+    }
+    .logo {
+      width:140px; height:140px; border-radius:50%;
+      background:rgba(255,255,255,0.15); display:flex;align-items:center;justify-content:center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      transform: scale(0.95);
+      animation: pop 1s ease-in-out;
+    }
+    @keyframes pop { from { transform: scale(.6) } to { transform: scale(1) } }
+    .brand { font-size:28px; margin-top:14px; font-weight:700 }
+  </style>
+</head>
+<body>
+  <div class="splash">
+    <div class="logo"><img src="safetour.jpg" alt="logo" style="width:160px"></div>
+    <div class="brand">SafeTour Kerala</div>
+    <div style="margin-top:12px; font-size:14px; opacity:.95">Safe travel. Smart alerts.</div>
+    <div style="margin-top:12px; font-size:14px; opacity:.95">Created by - Scouts</div>
+  </div>
+  <script>
+    // wait 2 seconds then go to register
+    setTimeout(()=> location.href = "kyc.html", 4000);
+  </script>
+</body>
+</html>

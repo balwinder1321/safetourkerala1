@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Tour Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+    /* Reset and base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #4facfe, #2b6ef6);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+        width: 100%;
+        background: rgba(0,0,0,0.2);
+        backdrop-filter: blur(10px);
+        padding: 25px 20px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        animation: slideDown 1s ease-out;
+    }
+    header h1 { font-size: 2.2rem; }
+    header h3 { font-weight: 400; margin-top: 5px; color: #f0f0f0; }
+
+    /* Container for cards */
+    .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        padding: 30px;
+        width: 90%;
+        max-width: 1200px;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    /* Card style */
+    .card {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        transition: transform 0.4s, box-shadow 0.4s;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+    .card h3 {
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        color: #fff;
+    }
+
+    /* Buttons */
+    .btn {
+        background: #ff5e62;
+        background: linear-gradient(45deg, #ff5e62, #ff9966);
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    /* Iframes */
+    iframe {
+        width: 100%;
+        height: 220px;
+        border-radius: 15px;
+        margin-top: 10px;
+        border: none;
+        transition: transform 0.3s;
+    }
+    iframe:hover {
+        transform: scale(1.03);
+    }
+
+    /* Links */
+    .links a {
+        display: inline-block;
+        margin: 7px 12px;
+        color: #ffd700;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s, transform 0.3s;
+    }
+    .links a:hover {
+        color: #fff;
+        transform: scale(1.1);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+    }
+    @keyframes slideDown {
+        from {transform: translateY(-50px); opacity: 0;}
+        to {transform: translateY(0); opacity: 1;}
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+        .container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>SafeTour Dashboard</h1>
+    <h4>Welcome, {{ user_id }}!</h4>
+</header>
+
+<div class="container">
+
+    <!-- Location Card -->
+    <div class="card">
+        <h3>Share Your Location</h3>
+        <button class="btn" onclick="getLocation()">Share My Location</button>
+        <p id="locationResult" style="margin-top: 10px; color: #fff;"></p>
+    </div>
+
+    <!-- Nearby Hotels -->
+    <div class="card">
+        <h3>Nearby Hotels</h3>
+        <iframe id="hotelsMap" src=""></iframe>
+    </div>
+
+    <!-- Nearby Restaurants -->
+    <div class="card">
+        <h3>Nearby Restaurants</h3>
+        <iframe id="restaurantsMap" src=""></iframe>
+    </div>
+
+    <!-- Emergency Services -->
+    <div class="card">
+        <h3>Emergency & Transport</h3>
+        <p class="links">
+            <a href="https://www.uber.com/in/en/" target="_blank">Uber</a>
+            <a href="https://www.olacabs.com/" target="_blank">Ola</a>
+            <a href="https://rapido.bike/" target="_blank">Rapido</a>
+        </p>
+        <p class="links">
+            <a href="https://www.google.com/maps?q=hospitals+nearby" target="_blank">Hospitals</a>
+            <a href="https://www.google.com/maps?q=police+stations+nearby" target="_blank">Police Stations</a>
+        </p>
+    </div>
+
+</div>
+
+<script>
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        document.getElementById("locationResult").innerHTML = "Geolocation not supported.";
+    }
+}
+
+function showPosition(position) {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+    document.getElementById("locationResult").innerHTML = `Latitude: ${lat}, Longitude: ${lon}`;
+
+    document.getElementById("hotelsMap").src = `https://www.google.com/maps?q=hotels+near+${lat},${lon}&z=15&output=embed`;
+    document.getElementById("restaurantsMap").src = `https://www.google.com/maps?q=restaurants+near+${lat},${lon}&z=15&output=embed`;
+
+    fetch("/send_location", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({latitude: lat, longitude: lon})
+    }).then(res => res.json()).then(data => {
+        if(data.alert) alert(data.alert);
+    });
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            document.getElementById("locationResult").innerHTML = "User denied the request for Geolocation.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            document.getElementById("locationResult").innerHTML = "Location information is unavailable.";
+            break;
+        case error.TIMEOUT:
+            document.getElementById("locationResult").innerHTML = "The request to get user location timed out.";
+            break;
+        default:
+            document.getElementById("locationResult").innerHTML = "An unknown error occurred.";
+            break;
+    }
+}
+</script>
+<div>
+    <style>
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #007BFF; /* Blue background */
+      color: white;              /* White text */
+      text-decoration: none;     /* Remove underline */
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;        /* Rounded corners */
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #0056b3; /* Darker blue on hover */
+    }
+    </style>
+    <a href="nextpage.html" class="btn">Go to Next Page</a>
+</div>
+
+</body>
+</html>
